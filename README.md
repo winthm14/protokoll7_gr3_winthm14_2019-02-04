@@ -182,6 +182,38 @@ void app_handleUartByte(char c)
 }
 
 
+```  
+### app.h  
+```c
+struct Modbus // Struktur um alle Komponenten
+{
+  char frame[16];
+  int8_t frameIndex;
+  uint16_t frameError;
+  uint16_t errCnt;
+};
+
+struct App
+{
+  uint8_t adch;
+  struct Modbus modbus;
+};
+```  
+### sys.c
+```c
+ISR (SYS_UART_RECEIVE_VECTOR)
+{
+  static uint8_t lastChar;
+  uint8_t c = SYS_UDR;
+  
+  if (c=='R' && lastChar=='@')
+    {
+      wdt_enable(WDTO_15MS);
+      wdt_reset();
+      while(1) {};
+    }
+    lastChar = c;
+    app_handleUartByte(c);
 ```
 
 
